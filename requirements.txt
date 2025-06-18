@@ -4,7 +4,7 @@ python-dotenv
 pydantic
 sqlalchemy
 asyncpg
-openai
+openai>=1.0.0
 sendgrid
 stripe
 pydantic-settings
