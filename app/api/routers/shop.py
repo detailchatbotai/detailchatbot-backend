@@ -9,6 +9,6 @@ router = APIRouter(tags=["shop"])
 @router.get("/shop/{shop_id}", response_model=ShopRead)
 async def read_shop(
     shop_id: str,
-    db: AsyncSession = Depends(get_db)      # ← use the get_db() from core.database
+    db: AsyncSession = Depends(get_db)
 ):
     return await get_shop(db, shop_id)

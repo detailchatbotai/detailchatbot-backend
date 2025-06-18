@@ -1,4 +1,3 @@
-# app/api/services/chat.py
 from openai import OpenAI
 from app.core.config import settings
 from app.schemas.chat import ChatResponse

@@ -15,3 +15,10 @@ async def chat_endpoint(
     AI‐powered chat: uses OpenAI to answer user questions in the context of a shop.
     """
     return await chat_with_openai(req.userMessage, req.shopId, db)
+
+# @router.post("/chat", response_model=ChatResponse)
+# async def chat_endpoint(req: ChatRequest, db: AsyncSession = Depends(get_db)):
+#     shop = await get_shop(db, req.shopId)
+#     if not shop.is_active:
+#         raise HTTPException(402, "Subscription required to chat")
+#     return await chat_with_openai(req.userMessage, req.shopId, db)

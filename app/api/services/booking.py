@@ -10,7 +10,6 @@ from app.core.config import settings
 async def record_booking(db: AsyncSession, booking: BookingCreate):
     new = Booking(shop_id=booking.shop_id, timestamp=booking.start_time, customer_email=booking.email)
     db.add(new)
-    # commit is handled by get_db()
 
     # send confirmation email
     sg = SendGridAPIClient(settings.SENDGRID_API_KEY)
