@@ -6,7 +6,8 @@ class Settings(BaseSettings):
     SENDGRID_API_KEY: str
     SENDGRID_SENDER: str
     # STRIPE_SECRET_KEY: str
-    # CALENDLY_API_KEY: str
+    CALENDLY_API_KEY: str
+    CALENDLY_SIGNING_KEY: str
 
     class Config:
         env_file = ".env"

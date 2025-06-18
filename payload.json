@@ -1,0 +1,1 @@
+{"event":"invitee.created","payload":{"invitee":{"event_type":{"slug":"test-shop"},"email":"customer@example.com","event":{"start_time":"2025-06-18T15:00:00Z"}}}}

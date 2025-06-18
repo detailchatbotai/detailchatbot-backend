@@ -9,3 +9,4 @@ sendgrid
 stripe
 pydantic-settings
 greenlet
+email-validator
