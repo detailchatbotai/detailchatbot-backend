@@ -1,2 +1,65 @@
-.venv
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Env files
 .env
+.env.*.local
+
+# PyTest
+.pytest_cache/
+.cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
+
+# MyPy
+.mypy_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# SQLite (if you ever use it locally)
+*.sqlite3
