@@ -1,9 +1,10 @@
-# app/core/config.py
 from pydantic_settings import BaseSettings
+from pydantic import Field
 
 class Settings(BaseSettings):
     # Database
-    DATABASE_URL: str
+    #DATABASE_URL: str
+    DATABASE_URL: str = Field(..., alias="ASYNC_DATABASE_URL")
 
     # OpenAI
     OPENAI_API_KEY: str

@@ -21,10 +21,8 @@ async def booking_webhook(
     db: AsyncSession = Depends(get_db),
     x_calendly_signature: str = Header(...),
 ):
-    # 1. Raw bytes exactly as Calendly sent them
     raw_body = await request.body()
 
-    # 2. Split header → {'t': '1729330186', 'v1': '7f3c2d…'}
     try:
         sig_parts = dict(kv.split("=", 1) for kv in x_calendly_signature.split(","))
         ts   = int(sig_parts["t"])
@@ -32,14 +30,11 @@ async def booking_webhook(
     except Exception:
         raise HTTPException(status_code=400, detail="Malformed signature header")
 
-    # 3. Optional: reject if timestamp is too old
     if abs(time.time() - ts) > TS_TOLERANCE_SEC:
         raise HTTPException(status_code=400, detail="Signature timestamp too old")
 
-    # 4. Re-create the exact message Calendly signed
     msg = f"{ts}.{raw_body.decode()}".encode()
 
-    # 5. Compute HMAC-SHA256 and compare
     good = hmac.new(
         CALENDLY_SIGNING_KEY.encode(),
         msg,
@@ -52,7 +47,6 @@ async def booking_webhook(
             detail="Invalid Calendly signature",
         )
 
-    # ---- Verified! process payload normally ----
     data = req.payload
     booking = BookingCreate(
         shop_id    = data["invitee"]["event_type"]["slug"],
