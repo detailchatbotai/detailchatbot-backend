@@ -1,4 +1,7 @@
+import os
+import logging
 import ssl
+from urllib.parse import urlparse
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from .config import settings
@@ -7,6 +10,10 @@ class Base(DeclarativeBase):
     pass
 
 ssl_ctx = ssl.create_default_context()
+
+url = os.getenv("ASYNC_DATABASE_URL")
+logging.warning("ASYNC_DATABASE_URL SEEN BY APP → %r", url)
+logging.warning("HOST PART → %s", urlparse(url).hostname)
 
 engine = create_async_engine(
     settings.DATABASE_URL,
