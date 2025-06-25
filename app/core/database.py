@@ -1,43 +1,25 @@
-import os
-import logging
-import ssl
-from urllib.parse import urlparse
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
-from .config import settings
-
-class Base(DeclarativeBase):
-    pass
-
-ssl_ctx = ssl.create_default_context()
-
-url = os.getenv("ASYNC_DATABASE_URL")
-logging.warning("ASYNC_DATABASE_URL SEEN BY APP → %r", url)
-logging.warning("HOST PART → %s", urlparse(url).hostname)
+from sqlalchemy.orm import sessionmaker
+from app.core.config import settings
 
 engine = create_async_engine(
     settings.DATABASE_URL,
-    connect_args={"ssl": ssl_ctx},
-    echo=True,
+    pool_size=20,
+    max_overflow=40,
     pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
-    pool_timeout=30,
+    pool_recycle=1800,
+    echo=False,
+    future=True,
 )
 
 AsyncSessionLocal = sessionmaker(
     bind=engine,
     class_=AsyncSession,
     expire_on_commit=False,
+    autoflush=False,
+    autocommit=False,
 )
 
 async def get_db():
     async with AsyncSessionLocal() as session:
-        try:
-            yield session
-            await session.commit()
-        except:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()
+        yield session

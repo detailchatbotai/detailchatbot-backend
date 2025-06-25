@@ -10,3 +10,5 @@ stripe
 pydantic-settings
 greenlet
 email-validator
+passlib[bcrypt]
+httpx

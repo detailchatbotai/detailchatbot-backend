@@ -1,0 +1,185 @@
+**Project Overview**
+A FastAPI-based backend service for a niche AI chatbot targeting mobile/auto detailing businesses. It will:
+
+* Handle conversational AI using OpenAI’s API for Q\&A about services and bookings. ([medium.com][1])
+* Integrate with Stripe for subscription billing (Starter, Pro, Elite plans). ([medium.com][2])
+* Persist data and manage authentication via Supabase (PostgreSQL with Row-Level Security). ([reddit.com][3], [slashdev.io][4])
+
+---
+
+**Architecture & Tech Stack**
+
+* **Framework**: FastAPI with Pydantic for type-safe request/response models. ([github.com][5])
+* **Database**: Supabase (PostgreSQL) leveraging schemas and RLS for multi-tenant security. ([reddit.com][3])
+* **AI**: OpenAI API client with retry logic via Tenacity and structured logging (e.g., Loguru). ([medium.com][1])
+* **Payments**: Stripe Python SDK for subscription management; webhooks to sync billing events. ([medium.com][2])
+* **Hosting/Deploy**: Docker containers orchestrated via Kubernetes or Docker Compose; CI/CD with GitHub Actions. ([fastapi.tiangolo.com][6])
+* **Env & Secrets**: `pydantic.BaseSettings` to load environment variables (OpenAI key, Stripe keys, Supabase URL/Key). ([medium.com][7])
+
+---
+
+**Branch Strategy & Workflow**
+
+* **Repository**: `detailchatbot.ai`
+* **Default Branch**: `main` (production-ready)
+* **Development Branch**: `dev` for ongoing feature work.
+* **Feature Branches**: `feat/<short-description>` from `dev`, PRs back into `dev` for review.
+* **CI/CD**: On PR, run linting (flake8), type checks (mypy), tests (pytest), and security scans. ([medium.com][8])
+
+---
+
+**API Design Best Practices**
+
+* **Modular Structure**: Separate routers, services, schemas, and utils folders for clear boundaries. ([medium.com][8])
+* **Dependency Injection**: Use FastAPI’s `Depends` for database sessions, authentication, and shared clients. ([github.com][5])
+* **Versioning**: Prefix routes `/v1/`, `/v2/` to allow backward-compatible changes. ([webandcrafts.com][9])
+* **Validation & Serialization**: Rely on Pydantic models for strict input/output contracts. ([github.com][5])
+
+---
+
+**Scalability & Performance**
+
+* **Asynchronous I/O**: Leverage async DB client (`asyncpg` via Supabase) and async HTTP for OpenAI/Stripe calls. ([medium.com][7])
+* **Caching**: Introduce Redis or in-memory LRU cache for frequent lookups (e.g., service availability). ([webandcrafts.com][9])
+* **Horizontal Scaling**: Containerize each service; use Kubernetes/GCP autoscaling. ([medium.com][8])
+
+---
+
+**Security**
+
+* **Authentication**: JWT tokens issued by Supabase Auth for end users; admin roles for dashboard. ([slashdev.io][4])
+* **Authorization**: Enforce RLS policies per tenant (detailer account) in Supabase. ([reddit.com][3])
+* **Secrets Management**: Store keys in environment variables or a vault; never commit to repo. ([medium.com][7])
+* **Rate Limiting & Abuse Protection**: Use Starlette middleware or API gateway features per subscription plan. ([webandcrafts.com][9])
+* **Webhook Security**: Validate Stripe signatures on incoming webhook events. ([medium.com][10])
+
+---
+
+**Business Logic & Subscription Plans**
+
+* **Starter Plan**:
+
+  * Up to 500 AI queries/month
+  * Basic Q\&A & booking links only
+  * Email support
+* **Pro Plan**:
+
+  * Up to 2,000 AI queries/month
+  * Full conversational booking integration (e.g., via Calendly API)
+  * Webchat widget customization
+  * Priority email support
+* **Elite Plan**:
+
+  * Unlimited AI queries
+  * Advanced analytics dashboard (usage, customer satisfaction)
+  * Multi-location support
+  * Dedicated account manager & SLAs ([medium.com][2])
+
+---
+
+**Stripe Integration**
+
+* **Subscription Models**: Use Stripe Prices & Products to define plans. ([medium.com][2])
+* **Webhook Handling**: Listen for `invoice.paid`, `invoice.payment_failed`, `customer.subscription.updated` to sync user access. ([medium.com][10])
+* **Testing**: Use `pytest-vcr` or `pytest-mock` to record/playback Stripe API calls, masking real keys. ([reddit.com][11])
+
+---
+
+**OpenAI Integration**
+
+* **Retry Logic**: Tenacity for transient errors (rate limits, timeouts). ([medium.com][1])
+* **Logging**: Capture prompts and responses (redact PII) with structured logs (Loguru). ([medium.com][1])
+* **Prompt Management**: Store prompt templates in version control; support customization per tenant. ([medium.com][12])
+
+---
+
+**Supabase Integration**
+
+* **RLS & Schemas**: Use schemas per data domain and RLS for row-level tenant isolation. ([reddit.com][3])
+* **Client Setup**: Leverage Supabase’s Python client with async support in a singleton dependency. ([halo-lab.com][13])
+* **Edge Functions**: Use Supabase Functions for lightweight serverless logic if needed. ([nocodestartup.io][14])
+
+---
+
+**CI/CD & Deployment**
+
+* **Docker**: Multi-stage build: install dependencies, run lint/tests, then produce minimal runtime image. ([fastapi.tiangolo.com][6])
+* **GitHub Actions**:
+
+  * On PR: lint, type-check, test.
+  * On merge to `dev`: deploy to staging.
+  * On merge to `main`: deploy to production. ([fastapi.tiangolo.com][6])
+
+---
+
+**Testing & Monitoring**
+
+* **Unit/Integration Tests**: `pytest` with fixtures for FastAPI TestClient, Supabase mocks, and Stripe replay. ([reddit.com][11])
+* **End-to-End Tests**: Use Playwright or Cypress on deployed staging for chat flow validation.
+* **APM**: Integrate Datadog or Sentry for error/tracing in production.
+* **Metrics**: Expose Prometheus metrics (request duration, AI usage) via `/metrics`.
+
+---
+
+This summary should serve as the “context file” in your `dev` branch to guide GitHub Copilot in generating clean, modular, and secure backend code for **detailchatbot.ai**.
+
+[1]: https://medium.com/%40rameshkannanyt0078/mastering-openai-integration-with-fastapi-a-high-performance-ai-api-in-python-2e9ba6825b5e?utm_source=chatgpt.com "Mastering OpenAI Integration with FastAPI: A High-Performance AI ..."
+[2]: https://medium.com/%40ojasskapre/implementing-stripe-subscriptions-with-supabase-next-js-and-fastapi-666e1aada1b5?utm_source=chatgpt.com "Implementing Stripe Subscriptions with Supabase, Next.js, and ..."
+[3]: https://www.reddit.com/r/Supabase/comments/1bnerpi/supabase_db_best_practice/?utm_source=chatgpt.com "supabase Db best practice - Reddit"
+[4]: https://slashdev.io/-guide-to-building-secure-backends-in-supabase-in-2024?utm_source=chatgpt.com "Guide To Building Secure Backends In Supabase In 2024"
+[5]: https://github.com/zhanymkanov/fastapi-best-practices?utm_source=chatgpt.com "FastAPI Best Practices and Conventions we used at our startup"
+[6]: https://fastapi.tiangolo.com/project-generation/?utm_source=chatgpt.com "Full Stack FastAPI Template"
+[7]: https://medium.com/towardsdev/building-scalable-applications-with-fastapi-23f5a8746582?utm_source=chatgpt.com "Building Scalable Applications with FastAPI: | by Wissem Hammoudi"
+[8]: https://medium.com/%40dsjayamal/building-scalable-and-maintainable-fastapi-applications-part-1-folder-structure-8b6a27bc6877?utm_source=chatgpt.com "Building Scalable and Maintainable FastAPI Applications - Medium"
+[9]: https://webandcrafts.com/blog/fastapi-scalable-microservices?utm_source=chatgpt.com "FastAPI for Scalable Microservices: Best Practices & Optimisation"
+[10]: https://medium.com/%40chodvadiyasaurabh/integrating-stripe-payment-gateway-with-fastapi-a-comprehensive-guide-8fe4540b5a4?utm_source=chatgpt.com "Integrating Stripe Payment Gateway with FastAPI - Medium"
+[11]: https://www.reddit.com/r/FastAPI/comments/1i0kd66/best_practice_for_mocking_stripe_calls_in_a/?utm_source=chatgpt.com "Best practice for mocking stripe calls in a FASTAPI integration test?"
+[12]: https://medium.com/%40reddyyashu20/beginners-guide-to-fastapi-openai-chatgpt-api-integration-50a0c3b8571e?utm_source=chatgpt.com "Beginner's Guide to FastAPI & OpenAI ChatGPT API Integration"
+[13]: https://www.halo-lab.com/blog/building-fast-backends-in-supabase?utm_source=chatgpt.com "Building Fast Backends in Supabase: How to Create a ... - Halo Lab"
+[14]: https://nocodestartup.io/en/supabase-backend-everything-you-need-to-know/?utm_source=chatgpt.com "Supabase Backend – Everything You Need to Know - NoCode StartUp"
+
+
+For a “start small and move fast” MVP, I’d recommend using a managed PaaS rather than standing up your own Kubernetes cluster:
+
+Use Render’s free/low-cost tier
+
+Zero ops: automatic HTTPS, CI/CD on Git push, health checks, logs, metrics.
+
+Free tier supports small FastAPI web services (512 MB RAM, sleeps when idle).
+
+Easy scale-up: when you need more performance or guaranteed uptime, you can bump to a paid instance without changing your deployment.
+
+Local Docker Compose for development
+
+Keep your Dockerfiles and a simple docker-compose.yml for local testing of FastAPI, Supabase emulator (or direct remote), Redis cache, etc.
+
+When you push to Render, it’ll use the same container definitions you’ve tested locally.
+
+Future path
+
+Once you validate your market and need more control or cost-efficiency, you can re-evaluate a managed Kubernetes solution (EKS/GKE/AKS) or even self-managed clusters.
+
+But for now—getting code live in minutes, with SSL and CI/CD—Render is the fastest, simplest choice.
+
+** Project Structure
+
+detailchatbot-backend/
+├── app/
+│   ├── main.py
+│   ├── api/
+│   │   └── v1/
+│   │       ├── __init__.py
+│   │       ├── auth.py
+│   │       └── chatbot.py
+│   ├── core/
+│   │   ├── config.py
+│   │   └── security.py
+│   ├── models/
+│   │   └── user.py
+│   ├── services/
+│   │   └── openai_service.py
+│   └── utils/
+│       └── logging.py
+├── Dockerfile
+├── requirements.txt
+└── README.md

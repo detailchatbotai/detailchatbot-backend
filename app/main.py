@@ -1,26 +1,25 @@
+import logging
 from fastapi import FastAPI
-from app.core.database import engine, Base
-from app.api.routers.shop    import router as shop_router
-from app.api.routers.chat    import router as chat_router
-from app.api.routers.booking import router as booking_router
-from app.api.routers.billing import router as billing_router
+from app.api.v1.auth import router as auth_router
+from sqlalchemy.ext.asyncio import AsyncEngine
+from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import sessionmaker
+from app.models.user import Base
+from app.core.database import engine
+
+# Import other v1 routers as you add them, e.g. chatbot, booking, billing, etc.
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
 
 app = FastAPI(title="DetailChatBot API")
 
-@app.on_event("startup")
-async def on_startup():
-    """
-    Create all tables defined on Base.metadata (shops, bookings, etc.)
-    in the proper order so that foreign keys resolve cleanly.
-    """
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-# Mount all API routers under /api
-app.include_router(shop_router,    prefix="/api")
-app.include_router(chat_router,    prefix="/api")
-app.include_router(booking_router, prefix="/api")
-app.include_router(billing_router, prefix="/api")
+# Mount all v1 API routers under /api/v1
+app.include_router(auth_router, prefix="/api/v1")
+# Example: app.include_router(chatbot_router, prefix="/api/v1")
 
 @app.get("/health")
 async def health():
@@ -28,3 +27,9 @@ async def health():
     Simple health check endpoint.
     """
     return {"status": "OK"}
+
+@app.on_event("startup")
+async def on_startup():
+    # Create all tables (development only)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
