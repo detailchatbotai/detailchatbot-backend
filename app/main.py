@@ -1,6 +1,7 @@
 import logging
 from fastapi import FastAPI
 from app.api.v1.auth import router as auth_router
+from app.api.v1.billing import router as billing_router
 from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,6 +20,7 @@ app = FastAPI(title="DetailChatBot API")
 
 # Mount all v1 API routers under /api/v1
 app.include_router(auth_router, prefix="/api/v1")
+app.include_router(billing_router, prefix="/api/v1")
 # Example: app.include_router(chatbot_router, prefix="/api/v1")
 
 @app.get("/health")

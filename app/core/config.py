@@ -6,6 +6,12 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = Field("dev", env="ENVIRONMENT")
     SUPABASE_URL: str = Field(..., env="SUPABASE_URL")
     SUPABASE_KEY: str = Field(..., env="SUPABASE_KEY")
+    SUPABASE_JWT_SECRET: str = Field(..., env="SUPABASE_JWT_SECRET")
+    STRIPE_SECRET_KEY: str = Field(..., env="STRIPE_SECRET_KEY")
+    STRIPE_PRICE_STARTER: str = Field(..., env="STRIPE_PRICE_STARTER")
+    # Add additional Stripe price IDs as needed:
+    # STRIPE_PRICE_PRO: str = Field(..., env="STRIPE_PRICE_PRO")
+    # STRIPE_PRICE_ELITE: str = Field(..., env="STRIPE_PRICE_ELITE")
 
     class Config:
         env_file = ".env"

@@ -12,3 +12,4 @@ greenlet
 email-validator
 passlib[bcrypt]
 httpx
+python-jose

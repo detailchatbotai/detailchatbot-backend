@@ -1,10 +1,14 @@
 from app.services.auth_service import AuthService, AuthServiceException
 from app.models.user import User
+from app.repositories.user_repository import UserRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Any
 from fastapi import HTTPException
 import logging
 from sqlalchemy.exc import IntegrityError
+
+class UserAlreadyExistsException(Exception):
+    pass
 
 class UserService:
     logger = logging.getLogger(__name__)
@@ -60,6 +64,11 @@ class UserService:
         Handles duplicate and unexpected errors with clear logging and HTTP responses.
         """
         UserService.logger.info(f"[Signup] Start signup_user for email: {user_create.email}")
+        # Check for existing user using UserRepository for consistency
+        existing_user = await UserRepository.get_by_email(db, user_create.email)
+        if existing_user:
+            UserService.logger.warning(f"[Signup] User already exists in local DB: {user_create.email}")
+            raise HTTPException(status_code=400, detail="User already exists in local DB.")
         try:
             # Register with Supabase Auth
             result = await auth_service.register_user(
@@ -71,13 +80,15 @@ class UserService:
             if not supabase_user_id:
                 UserService.logger.error(f"[Signup] Supabase user ID not returned for email: {user_create.email}")
                 raise HTTPException(status_code=500, detail="Supabase user ID not returned.")
-            # Insert into local users table
-            local_user = await UserService.create_local_user(
+            # Insert into local users table using UserRepository
+            local_user = await UserRepository.create_user(
                 db,
                 email=user_create.email,
+                hashed_password="supabase_managed",
                 shop_name=user_create.shop_name,
                 plan=user_create.plan,
                 is_subscribed=user_create.is_subscribed,
+                is_active=True,
                 supabase_user_id=supabase_user_id
             )
             if not local_user:
@@ -114,3 +125,16 @@ class UserService:
         except Exception as exc:
             UserService.logger.error(f"[Login] Unexpected error for {user_login.email}: {exc}")
             raise HTTPException(status_code=500, detail="Internal server error")
+
+    @staticmethod
+    async def delete_account(db: AsyncSession, supabase_user_id: str, auth_service) -> None:
+        """
+        Delete the user from Supabase Auth and the local DB.
+        Always attempt to delete from local DB, even if Supabase delete fails (unless it's a fatal error).
+        """
+        try:
+            await auth_service.delete_user(supabase_user_id)
+        except AuthServiceException as exc:
+            UserService.logger.warning(f"[Delete] Supabase delete failed or user not found: {exc}")
+            # Continue to local delete regardless
+        await UserRepository.delete_by_supabase_user_id(db, supabase_user_id)
