@@ -1,51 +1,43 @@
-from fastapi import APIRouter, Depends, status, Request, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.billing import SubscriptionRequest, SubscriptionResponse
-from app.services.billing_service import BillingService, BillingServiceException
 from app.core.database import get_db
-from jose import jwt, JWTError
-from app.core.config import settings
-import logging
+from app.services.billing_service import BillingService
+from app.schemas.billing import SubscribeRequest, SubscribeResponse, CancelRequest, CancelResponse
+from app.services.auth_service import AuthService
+from app.repositories.user_repository import UserRepository
 
 router = APIRouter(prefix="/billing", tags=["billing"])
-logger = logging.getLogger(__name__)
 
-SUPABASE_JWT_SECRET = settings.SUPABASE_JWT_SECRET
-
-def get_email_from_token(token: str) -> str:
-    try:
-        payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"], audience="authenticated")
-        email = payload.get("email")
-        if not email:
-            raise HTTPException(status_code=401, detail="Email not found in token")
-        return email
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-async def get_current_user_email(request: Request) -> str:
-    auth_header = request.headers.get("Authorization")
-    if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(status_code=401, detail="Missing or invalid Authorization header")
-    token = auth_header.split(" ", 1)[1]
-    return get_email_from_token(token)
-
-@router.post("/subscribe", response_model=SubscriptionResponse, status_code=status.HTTP_200_OK)
+@router.post("/subscribe", response_model=SubscribeResponse)
 async def subscribe(
-    request: SubscriptionRequest,
+    data: SubscribeRequest,
     db: AsyncSession = Depends(get_db),
-    email: str = Depends(get_current_user_email),
-) -> SubscriptionResponse:
-    try:
-        result = await BillingService.subscribe_user(
-            db=db,
-            email=email,
-            plan=request.plan,
-            success_url=request.success_url,
-            cancel_url=request.cancel_url
-        )
-        return SubscriptionResponse(**result)
-    except BillingServiceException as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
-    except Exception:
-        logger.exception("Unexpected error in /billing/subscribe")
-        raise HTTPException(status_code=500, detail="Internal server error")
+    supabase_user_id: str = Depends(AuthService.get_current_user_supabase_id)
+):
+    """
+    Initiate a Stripe Checkout session for the selected plan.
+    Returns a Stripe Checkout URL for the frontend to redirect the user.
+    """
+    return await BillingService.create_checkout_session(db, supabase_user_id, data.plan)
+
+@router.post("/cancel", response_model=CancelResponse)
+async def cancel_subscription(
+    data: CancelRequest,
+    db: AsyncSession = Depends(get_db),
+    supabase_user_id: str = Depends(AuthService.get_current_user_supabase_id)
+):
+    """
+    Cancel the user's active Stripe subscription.
+    """
+    return await BillingService.cancel_subscription(db, supabase_user_id)
+
+@router.get("/status", response_model=SubscribeResponse)
+async def subscription_status(
+    db: AsyncSession = Depends(get_db),
+    supabase_user_id: str = Depends(AuthService.get_current_user_supabase_id)
+):
+    """
+    Get the current subscription status and plan for the authenticated user.
+    """
+    return await BillingService.get_subscription_status(db, supabase_user_id)
+

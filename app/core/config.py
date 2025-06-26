@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     # Add additional Stripe price IDs as needed:
     # STRIPE_PRICE_PRO: str = Field(..., env="STRIPE_PRICE_PRO")
     # STRIPE_PRICE_ELITE: str = Field(..., env="STRIPE_PRICE_ELITE")
+    SUCCESS_URL: str = Field(..., env="SUCCESS_URL")
+    CANCEL_URL: str = Field(..., env="CANCEL_URL")
+    STRIPE_WEBHOOK_SECRET: str = Field(..., env="STRIPE_WEBHOOK_SECRET")
 
     class Config:
         env_file = ".env"

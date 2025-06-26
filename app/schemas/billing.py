@@ -1,19 +1,20 @@
 from pydantic import BaseModel, constr
 from typing import Optional
 
-class SubscriptionRequest(BaseModel):
+class SubscribeRequest(BaseModel):
     plan: constr(min_length=3, max_length=50)
-    success_url: Optional[str] = None
-    cancel_url: Optional[str] = None
 
-class SubscriptionResponse(BaseModel):
-    checkout_url: str
-    session_id: str
+class SubscribeResponse(BaseModel):
+    checkout_url: Optional[str] = None
+    plan: Optional[str] = None
+    is_subscribed: Optional[bool] = None
+    message: Optional[str] = None
 
-class CancelSubscriptionRequest(BaseModel):
-    # Optionally, allow passing a reason or other metadata
-    reason: str | None = None
+class CancelRequest(BaseModel):
+    # Optionally include a reason or other fields
+    pass
 
-class CancelSubscriptionResponse(BaseModel):
-    cancelled: bool
-    message: str
+class CancelResponse(BaseModel):
+    success: bool
+    message: Optional[str] = None
+
