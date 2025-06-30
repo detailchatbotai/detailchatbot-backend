@@ -9,12 +9,14 @@ class Settings(BaseSettings):
     SUPABASE_JWT_SECRET: str = Field(..., env="SUPABASE_JWT_SECRET")
     STRIPE_SECRET_KEY: str = Field(..., env="STRIPE_SECRET_KEY")
     STRIPE_PRICE_STARTER: str = Field(..., env="STRIPE_PRICE_STARTER")
+
     # Add additional Stripe price IDs as needed:
     # STRIPE_PRICE_PRO: str = Field(..., env="STRIPE_PRICE_PRO")
     # STRIPE_PRICE_ELITE: str = Field(..., env="STRIPE_PRICE_ELITE")
     SUCCESS_URL: str = Field(..., env="SUCCESS_URL")
     CANCEL_URL: str = Field(..., env="CANCEL_URL")
     STRIPE_WEBHOOK_SECRET: str = Field(..., env="STRIPE_WEBHOOK_SECRET")
+    OPENAI_API_KEY: str = Field(..., env="OPENAI_API_KEY")
 
     class Config:
         env_file = ".env"

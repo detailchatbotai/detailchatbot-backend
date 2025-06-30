@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, Integer, DateTime, Boolean, func, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -24,3 +25,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     supabase_user_id = Column(String(50), unique=True, nullable=False, index=True)
+    ai_query_usage = Column(Integer, default=0, nullable=False)
+    ai_usage_reset = Column(DateTime(timezone=True), nullable=True)
+
+    shops = relationship("Shop", back_populates="owner", cascade="all, delete-orphan")
