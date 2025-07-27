@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+python-dotenv
+pydantic
+sqlalchemy
+asyncpg
+openai>=1.0.0
+sendgrid
+stripe
+pydantic-settings
+greenlet
+email-validator
+passlib[bcrypt]
+httpx
+python-jose
