@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     
     # External APIs
     OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-3.5-turbo"
     STRIPE_SECRET_KEY: str = ""
     STRIPE_WEBHOOK_SECRET: str = ""
 
@@ -63,7 +64,14 @@ class Settings(BaseSettings):
     FRONTEND_URL: str = "http://localhost:3000"  # For email links
 
     # CORS Security
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "https://detailchatbot.ai"]
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:3000", 
+        "http://localhost:8080",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8080",
+        "https://detailchatbot.ai",
+        "null"  # For local file:// testing
+    ]
     ALLOWED_METHODS: List[str] = ["GET", "POST", "PUT", "DELETE", "PATCH"]
     ALLOWED_HEADERS: List[str] = ["*"]
 

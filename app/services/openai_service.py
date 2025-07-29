@@ -4,7 +4,7 @@ Handles chat completions, shop-specific context, and booking assistance.
 """
 
 import logging
-import openai
+from openai import AsyncOpenAI
 import json
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -19,8 +19,8 @@ from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-# Configure OpenAI
-openai.api_key = settings.OPENAI_API_KEY
+# Configure OpenAI client
+openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
 
 
 class AIResponse(BaseModel):
@@ -38,7 +38,7 @@ class OpenAIService:
     
     def __init__(self, db: Session):
         self.db = db
-        self.model = "gpt-3.5-turbo"  # Use GPT-3.5-turbo for cost efficiency
+        self.model = getattr(settings, 'OPENAI_MODEL', 'gpt-3.5-turbo')  # Use configured model or default
         self.max_tokens = 500  # Reasonable limit for chat responses
         
         if not settings.OPENAI_API_KEY:
@@ -82,8 +82,8 @@ class OpenAIService:
             # Add current message
             messages.append({"role": "user", "content": message})
             
-            # Generate response
-            response = await openai.ChatCompletion.acreate(
+            # Generate response using new OpenAI client
+            response = await openai_client.chat.completions.create(
                 model=self.model,
                 messages=messages,
                 max_tokens=self.max_tokens,

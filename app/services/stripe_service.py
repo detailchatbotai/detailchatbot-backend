@@ -118,7 +118,21 @@ class StripeService:
         else:
             customer_id = shop.stripe_customer_id
         
-        # Get the appropriate price ID
+        # Handle free plans (no Stripe checkout needed)
+        if plan.price_monthly == 0 and plan.price_yearly == 0:
+            # Free plan - just activate subscription directly
+            shop.subscription_status = "active"
+            shop.plan_id = plan.id
+            self.db.commit()
+            
+            # Return mock checkout data for consistency
+            return {
+                "checkout_session_id": f"free_plan_{shop.id}_{plan.id}",
+                "checkout_url": f"{settings.FRONTEND_URL}/dashboard/billing/success?free_plan=true",
+                "customer_id": customer_id
+            }
+        
+        # Get the appropriate price ID for paid plans
         if billing_cycle == "yearly":
             price_id = plan.stripe_price_id_yearly
         else:
