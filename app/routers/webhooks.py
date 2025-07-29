@@ -2,8 +2,8 @@ from fastapi import APIRouter, Request, HTTPException, Depends
 from sqlalchemy.orm import Session
 import stripe
 import json
-from app.database import get_db
-from app.config import settings
+from app.core.database import get_db
+from app.core.config import settings
 from app.models.shop import Shop
 from app.services.stripe_service import StripeService
 

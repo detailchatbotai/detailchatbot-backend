@@ -3,7 +3,7 @@ uvicorn
 python-dotenv
 pydantic
 sqlalchemy
-asyncpg
+psycopg2-binary
 openai>=1.0.0
 sendgrid
 stripe
@@ -13,3 +13,4 @@ email-validator
 passlib[bcrypt]
 httpx
 python-jose
+python-dateutil

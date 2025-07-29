@@ -1,0 +1,9 @@
+{
+  "address": "123 Main St, Anytown, ST 12345",
+  "greeting_message": "Welcome! How can we help make your car shine?",
+  "logo_url": "https://example.com/logo.png",
+  "name": "Premium Auto Detailing",
+  "phone": "(555) 123-4567",
+  "primary_color": "#007bff",
+  "secondary_color": "#6c757d"
+}
