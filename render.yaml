@@ -16,4 +16,4 @@ services:
         
 databases:
   - name: detailchatbot-db-dev
-    plan: starter
+    plan: free
