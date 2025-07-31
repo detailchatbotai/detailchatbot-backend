@@ -4,8 +4,8 @@ import secrets
 
 
 class Settings(BaseSettings):
-    # Database
-    DATABASE_URL: str = "postgresql://user:password@localhost/detailchatbot"
+    # Database - REQUIRED environment variable for production
+    DATABASE_URL: str = "postgresql://postgres:password@localhost:5432/detailchatbot_dev"
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -16,8 +16,8 @@ class Settings(BaseSettings):
             # Ensure we're using psycopg2
             self.DATABASE_URL = self.DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://")
 
-    # Auth & Security
-    SECRET_KEY: str = secrets.token_urlsafe(32)  # Generate secure key if not provided
+    # Auth & Security - REQUIRED environment variable for production  
+    SECRET_KEY: str = secrets.token_urlsafe(32)  # Generate secure key for development only
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
@@ -89,6 +89,29 @@ class Settings(BaseSettings):
     @property
     def is_development(self) -> bool:
         return self.ENVIRONMENT.lower() == "development"
+    
+    def validate_production_config(self) -> None:
+        """Validate that all required environment variables are set for production"""
+        if not self.is_production:
+            return
+            
+        required_vars = {
+            "DATABASE_URL": self.DATABASE_URL,
+            "SECRET_KEY": self.SECRET_KEY, 
+            "OPENAI_API_KEY": self.OPENAI_API_KEY,
+            "STRIPE_SECRET_KEY": self.STRIPE_SECRET_KEY,
+            "STRIPE_WEBHOOK_SECRET": self.STRIPE_WEBHOOK_SECRET,
+        }
+        
+        missing_vars = []
+        for var_name, var_value in required_vars.items():
+            if not var_value or var_value == "":
+                missing_vars.append(var_name)
+        
+        if missing_vars:
+            raise ValueError(
+                f"Missing required environment variables for production: {', '.join(missing_vars)}"
+            )
 
     class Config:
         env_file = ".env"
@@ -97,3 +120,7 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+# Validate production configuration on startup
+if settings.is_production:
+    settings.validate_production_config()

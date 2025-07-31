@@ -4,7 +4,7 @@ services:
     env: python
     plan: starter
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --reload
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -12,8 +12,11 @@ services:
         value: development
       - key: DEBUG
         value: true
-      # All environment variables should be set via Render dashboard for security
+      # Database will be set via Render dashboard
+      # Other secrets will be set via Render dashboard
         
   - type: pserv
     name: detailchatbot-db-dev
     plan: starter
+    databaseName: detailchatbot_dev
+    databaseUser: detailchatbot_dev_user
