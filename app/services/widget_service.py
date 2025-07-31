@@ -40,7 +40,12 @@ class WidgetService:
         # Get shop customization
         primary_color = shop.primary_color or "#007bff"
         secondary_color = shop.secondary_color or "#6c757d"
-        api_base_url = settings.FRONTEND_URL.replace("3000", "8001") + "/api/v1"
+        
+        # Use the correct API base URL for the current environment
+        if settings.is_development:
+            api_base_url = "https://detailchatbot-api-dev.onrender.com/api/v1"
+        else:
+            api_base_url = "https://detailchatbot-api.onrender.com/api/v1"
         
         # Generate optimized widget JavaScript
         widget_js = f"""
