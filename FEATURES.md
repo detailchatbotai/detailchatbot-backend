@@ -5,7 +5,7 @@ This document outlines the feature differentiation between Starter, Pro, and Eli
 ## Current Implementation Status
 
 ### ✅ Currently Implemented
-- **Basic AI Chat**: GPT-3.5-turbo responses for all plans
+- **Basic AI Chat**: GPT-3.5-turbo responses for all plans!
 - **Embeddable Widget**: JavaScript widget with basic customization
 - **Usage Limits**: Chat and service count limits per plan
 - **Subscription Management**: Stripe integration with plan tiers
