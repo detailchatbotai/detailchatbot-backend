@@ -65,12 +65,14 @@ class Settings(BaseSettings):
 
     # CORS Security
     ALLOWED_ORIGINS: List[str] = [
-        "http://localhost:3000", 
-        "http://localhost:8080",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:8080",
-        "https://detailchatbot.ai",
-        "null"  # For local file:// testing
+        "http://localhost:3000",  # Local dev
+        "http://localhost:8080",  # Local dev
+        "http://127.0.0.1:3000",  # Local dev
+        "http://127.0.0.1:8080",  # Local dev
+        "https://detailchatbot.ai",  # Production frontend
+        "https://app.detailchatbot.ai",  # Production app
+        "https://www.detailchatbot.ai",  # Production www
+        "null"  # For widget file:// testing
     ]
     ALLOWED_METHODS: List[str] = ["GET", "POST", "PUT", "DELETE", "PATCH"]
     ALLOWED_HEADERS: List[str] = ["*"]
