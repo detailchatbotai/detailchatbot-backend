@@ -14,6 +14,6 @@ services:
         value: true
       # All other environment variables set via Render dashboard
         
-  - type: pserv
-    name: detailchatbot-db-dev
+databases:
+  - name: detailchatbot-db-dev
     plan: starter
