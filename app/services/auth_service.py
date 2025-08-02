@@ -447,6 +447,46 @@ class AuthenticationService:
             user.email, 
             verification_link
         )
+    
+    async def delete_user_account(self, user_id: int) -> bool:
+        """
+        Delete user account and all associated data.
+        This will cascade delete shops, services, chat sessions, etc.
+        
+        Args:
+            user_id: ID of user to delete
+            
+        Returns:
+            True if successful
+            
+        Raises:
+            HTTPException: If deletion fails
+        """
+        try:
+            user = self.db.query(User).filter(User.id == user_id).first()
+            if not user:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="User not found"
+                )
+            
+            # Delete user (will cascade delete shops, services, etc. via foreign key constraints)
+            self.db.delete(user)
+            self.db.commit()
+            
+            logger.info(f"User account deleted: {user.email} (ID: {user_id})")
+            return True
+            
+        except HTTPException:
+            self.db.rollback()
+            raise
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"Failed to delete user account {user_id}: {e}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to delete account"
+            )
 
 
 # Factory function for dependency injection

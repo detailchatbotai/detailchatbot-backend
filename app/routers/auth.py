@@ -389,5 +389,41 @@ async def logout(
     )
 
 
+@router.delete(
+    "/delete-account",
+    response_model=MessageResponse,
+    summary="Delete user account",
+    description="Permanently delete user account and all associated data"
+)
+async def delete_account(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    _rate_limit: bool = Depends(rate_limit_general)
+):
+    """
+    Delete user account and all associated data.
+    This action is irreversible and will:
+    - Delete all shops owned by the user
+    - Delete all services associated with those shops
+    - Delete all chat sessions and messages
+    - Cancel any active subscriptions
+    - Delete the user account
+    """
+    auth_service = get_auth_service(db)
+    
+    try:
+        await auth_service.delete_user_account(current_user.id)
+        
+        return MessageResponse(
+            message="Account deleted successfully"
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete account"
+        )
+
+
 # Note: Security headers would be added at the app level in main.py
 # APIRouter doesn't support middleware, only the main FastAPI app does

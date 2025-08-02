@@ -239,6 +239,25 @@ Headers: { "Authorization": "Bearer ACCESS_TOKEN" }
 }
 ```
 
+### **Account Deletion**
+```javascript
+// Delete user account and all associated data
+DELETE /api/v1/auth/delete-account
+Headers: { "Authorization": "Bearer ACCESS_TOKEN" }
+
+// Response
+{
+  "message": "Account deleted successfully"
+}
+
+// This will permanently delete:
+// - User account
+// - All shops owned by the user  
+// - All services for those shops
+// - All chat sessions and messages
+// - Any active subscriptions (should cancel in Stripe too)
+```
+
 ---
 
 ## 🤖 Widget Integration System
@@ -247,6 +266,15 @@ Headers: { "Authorization": "Bearer ACCESS_TOKEN" }
 ```javascript
 // This is what you show shop owners in their dashboard
 const embedCode = `<script src="https://detailchatbot-api-dev.onrender.com/api/v1/widget/${shop.public_api_key}/embed.js"></script>`;
+
+// ⚠️ IMPORTANT: Your backend already handles everything!
+// - Widget generation: ✅ Done
+// - Chat API: ✅ /api/v1/chat/{shop_api_key} exists  
+// - AI integration: ✅ OpenAI already connected
+// - Configuration: ✅ Auto-configured from shop data
+
+// NO CDN needed! Your API serves the widget directly.
+// NO separate chat/message endpoint needed! Use existing chat endpoint.
 
 // Widget customization options
 GET /api/v1/widget/{public_api_key}/config
