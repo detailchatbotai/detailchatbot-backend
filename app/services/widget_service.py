@@ -19,6 +19,20 @@ class WidgetService:
     def __init__(self, db: Session):
         self.db = db
     
+    def _escape_js_string(self, text: str) -> str:
+        """Escape a string for safe inclusion in JavaScript code"""
+        if not text:
+            return ""
+        
+        # Escape JavaScript special characters
+        return (text
+                .replace('\\', '\\\\')  # Escape backslashes first
+                .replace("'", "\\'")    # Escape single quotes
+                .replace('"', '\\"')    # Escape double quotes
+                .replace('\n', '\\n')   # Escape newlines
+                .replace('\r', '\\r')   # Escape carriage returns
+                .replace('\t', '\\t'))  # Escape tabs
+    
     def generate_widget_javascript(
         self,
         shop: Shop,
@@ -47,6 +61,12 @@ class WidgetService:
         else:
             api_base_url = "https://detailchatbot-api.onrender.com/api/v1"
         
+        # Escape strings for JavaScript safety
+        shop_name = self._escape_js_string(shop.name)
+        greeting_message = self._escape_js_string(
+            shop.greeting_message or f"Welcome to {shop.name}! How can I help you today?"
+        )
+        
         # Generate optimized widget JavaScript
         widget_js = f"""
 (function() {{
@@ -58,10 +78,10 @@ class WidgetService:
         API_BASE_URL: '{api_base_url}',
         THEME: '{theme}',
         POSITION: '{position}',
-        SHOP_NAME: '{shop.name}',
+        SHOP_NAME: '{shop_name}',
         PRIMARY_COLOR: '{primary_color}',
         SECONDARY_COLOR: '{secondary_color}',
-        GREETING: '{shop.greeting_message or f"Welcome to {shop.name}! How can I help you today?"}'
+        GREETING: '{greeting_message}'
     }};
     
     // Widget state
