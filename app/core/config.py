@@ -69,6 +69,7 @@ class Settings(BaseSettings):
         "http://localhost:8080",  # Local dev
         "http://127.0.0.1:3000",  # Local dev
         "http://127.0.0.1:8080",  # Local dev
+        "https://detailchatbot-frontend.onrender.com",  # DEV frontend
         "https://detailchatbot.ai",  # Production frontend
         "https://app.detailchatbot.ai",  # Production app
         "https://www.detailchatbot.ai",  # Production www
