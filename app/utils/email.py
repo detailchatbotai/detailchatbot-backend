@@ -326,7 +326,7 @@ class EmailService:
             </div>
             
             <div style="text-align: center; margin: 30px 0;">
-                <a href="{settings.FRONTEND_URL}/dashboard" style="display: inline-block; padding: 15px 30px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                <a href="{settings.frontend_url}/dashboard" style="display: inline-block; padding: 15px 30px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
                     Go to Dashboard
                 </a>
             </div>
@@ -358,7 +358,7 @@ class EmailService:
         3. Get your widget code to add to your website
         4. Set up calendar integration for bookings
         
-        Visit your dashboard: {settings.FRONTEND_URL}/dashboard
+        Visit your dashboard: {settings.frontend_url}/dashboard
         
         Questions? Contact us at support@detailchatbot.ai
         

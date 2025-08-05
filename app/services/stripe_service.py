@@ -128,7 +128,7 @@ class StripeService:
             # Return mock checkout data for consistency
             return {
                 "checkout_session_id": f"free_plan_{shop.id}_{plan.id}",
-                "checkout_url": f"{settings.FRONTEND_URL}/dashboard/billing/success?free_plan=true",
+                "checkout_url": f"{settings.frontend_url}/dashboard/billing/success?free_plan=true",
                 "customer_id": customer_id
             }
         
@@ -223,7 +223,7 @@ class StripeService:
             )
         
         if not return_url:
-            return_url = f"{settings.FRONTEND_URL}/dashboard/billing"
+            return_url = f"{settings.frontend_url}/dashboard/billing"
         
         try:
             portal_session = stripe.billing_portal.Session.create(
