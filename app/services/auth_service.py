@@ -208,7 +208,7 @@ class AuthenticationService:
             magic_token = SecurityUtils.create_magic_link_token(email)
             
             # Send magic link email
-            magic_link = f"{settings.FRONTEND_URL}/auth/magic-link?token={magic_token}"
+            magic_link = f"{settings.frontend_url}/auth/magic-link?token={magic_token}"
             await self.email_service.send_magic_link_email(email, magic_link)
             
             logger.info(f"Magic link sent to: {email}")
@@ -441,7 +441,7 @@ class AuthenticationService:
     async def _send_verification_email(self, user: User) -> None:
         """Send email verification email to user"""
         verification_token = SecurityUtils.create_email_verification_token(user.email)
-        verification_link = f"{settings.FRONTEND_URL}/auth/verify-email?token={verification_token}"
+        verification_link = f"{settings.frontend_url}/auth/verify-email?token={verification_token}"
         
         await self.email_service.send_verification_email(
             user.email, 

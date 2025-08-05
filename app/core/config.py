@@ -60,8 +60,8 @@ class Settings(BaseSettings):
     EMAIL_VERIFICATION_EXPIRE_HOURS: int = 24
     MAGIC_LINK_EXPIRE_MINUTES: int = 15
     
-    # Frontend URLs
-    FRONTEND_URL: str = "http://localhost:3000"  # For email links
+    # Frontend URLs - Dynamic based on environment
+    FRONTEND_URL: str = "http://localhost:3000"  # Default for local dev
 
     # CORS Security
     ALLOWED_ORIGINS: List[str] = [
@@ -92,6 +92,14 @@ class Settings(BaseSettings):
     @property
     def is_development(self) -> bool:
         return self.ENVIRONMENT.lower() == "development"
+    
+    @property
+    def frontend_url(self) -> str:
+        """Get the correct frontend URL based on environment"""
+        if self.is_development:
+            return "https://detailchatbot-frontend.onrender.com"
+        else:
+            return "https://app.detailchatbot.ai"
     
     def validate_production_config(self) -> None:
         """Validate that all required environment variables are set for production"""

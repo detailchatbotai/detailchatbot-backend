@@ -146,9 +146,9 @@ class StripeService:
         
         # Set default URLs if not provided
         if not success_url:
-            success_url = f"{settings.FRONTEND_URL}/dashboard/billing/success?session_id={{CHECKOUT_SESSION_ID}}"
+            success_url = f"{settings.frontend_url}/dashboard/billing/success?session_id={{CHECKOUT_SESSION_ID}}"
         if not cancel_url:
-            cancel_url = f"{settings.FRONTEND_URL}/dashboard/billing/cancelled"
+            cancel_url = f"{settings.frontend_url}/dashboard/billing/cancelled"
         
         try:
             checkout_session = stripe.checkout.Session.create(
